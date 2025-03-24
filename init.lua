@@ -2,7 +2,7 @@
 vim.g.mapleader = " "
 
 -- ====================================================
--- 🧠 Keybindings (global, sofort verfügbar)
+-- 🧠 Global Keybindings
 -- ====================================================
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files" })
@@ -33,7 +33,38 @@ if not vim.loop.fs_stat(lazypath) then
   -- ====================================================
   require("lazy").setup({
 
-    -- 🎨 UI & Theme
+    -- === Dashboard
+    {
+      "goolord/alpha-nvim",
+      dependencies = { "nvim-tree/nvim-web-devicons" },
+      config = function()
+      local alpha = require("alpha")
+      local dashboard = require("alpha.themes.dashboard")
+
+      dashboard.section.header.val = {
+        "╭────────────────────────────╮",
+        "│  Neovim Dev Terminal 🚀    │",
+        "│  Hello XSaitoKungX         │",
+        "│  Ready to create magic ✨  │",
+        "╰────────────────────────────╯",
+      }
+
+      dashboard.section.buttons.val = {
+        dashboard.button("e", "📄  Neues File", ":ene <BAR> startinsert<CR>"),
+                        dashboard.button("f", "🔍  Datei finden", ":Telescope find_files<CR>"),
+                        dashboard.button("r", "📁  Letzte Dateien", ":Telescope oldfiles<CR>"),
+                        dashboard.button("c", "⚙️  Config öffnen", ":e $MYVIMRC<CR>"),
+                        dashboard.button("l", "💤  Plugins verwalten", ":Lazy<CR>"),
+                        dashboard.button("q", "❌  Beenden", ":qa<CR>"),
+      }
+
+      dashboard.opts.opts.noautocmd = true
+      vim.cmd([[autocmd User AlphaReady echo '🧠 Ready to go, Mark!']])
+      alpha.setup(dashboard.opts)
+      end,
+    },
+
+    -- === UI & Theme
     {
       "Mofiqul/dracula.nvim",
       lazy = false,
@@ -53,7 +84,7 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- 🧭 Navigation & File Management
+    -- === Navigation & Datei
     {
       "nvim-tree/nvim-tree.lua",
       dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -82,7 +113,7 @@ if not vim.loop.fs_stat(lazypath) then
       },
     },
 
-    -- 🧠 LSP, Completion & Snippets
+    -- === LSP, Completion, Snippets
     {
       "VonHeikemen/lsp-zero.nvim",
       branch = "v3.x",
@@ -116,6 +147,51 @@ if not vim.loop.fs_stat(lazypath) then
     },
 
     {
+      "hrsh7th/nvim-cmp",
+      dependencies = { "L3MON4D3/LuaSnip" },
+      config = function()
+      local cmp = require("cmp")
+      local luasnip = require("luasnip")
+
+      cmp.setup({
+        snippet = {
+          expand = function(args)
+          luasnip.lsp_expand(args.body)
+          end,
+        },
+        mapping = {
+          ["<Tab>"] = cmp.mapping(function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+            elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
+              else
+                fallback()
+                end
+                end, { "i", "s" }),
+
+                ["<S-Tab>"] = cmp.mapping(function(fallback)
+                if cmp.visible() then
+                  cmp.select_prev_item()
+                  elseif luasnip.jumpable(-1) then
+                    luasnip.jump(-1)
+                    else
+                      fallback()
+                      end
+                      end, { "i", "s" }),
+
+                      ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                ["<C-Space>"] = cmp.mapping.complete(),
+        },
+        sources = {
+          { name = "nvim_lsp" },
+          { name = "luasnip" },
+        },
+      })
+      end,
+    },
+
+    {
       "rafamadriz/friendly-snippets",
       dependencies = { "L3MON4D3/LuaSnip" },
       config = function()
@@ -123,7 +199,7 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- 💾 Formatting
+    -- === Format
     {
       "stevearc/conform.nvim",
       config = function()
@@ -142,7 +218,7 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- ✨ Enhancements
+    -- === Enhancements
     {
       "nvim-treesitter/nvim-treesitter",
       build = ":TSUpdate",
@@ -175,7 +251,7 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- 🐙 Git & Markdown
+    -- === Git & Markdown
     {
       "kdheepak/lazygit.nvim",
       dependencies = { "nvim-lua/plenary.nvim" },
@@ -197,20 +273,21 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- 🔖 Harpoon (inkl. Keymaps hier!)
-  {
-    "ThePrimeagen/harpoon",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    config = function()
-    local mark = require("harpoon.mark")
-    local ui = require("harpoon.ui")
+    -- === Harpoon
+    {
+      "ThePrimeagen/harpoon",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      config = function()
+      local mark = require("harpoon.mark")
+      local ui = require("harpoon.ui")
 
-    vim.keymap.set("n", "<leader>ha", mark.add_file, { desc = "Harpoon: Add File" })
-    vim.keymap.set("n", "<leader>hm", ui.toggle_quick_menu, { desc = "Harpoon: Menu" })
-    vim.keymap.set("n", "<leader>h1", function() ui.nav_file(1) end, { desc = "Harpoon: File 1" })
-    vim.keymap.set("n", "<leader>h2", function() ui.nav_file(2) end, { desc = "Harpoon: File 2" })
-    vim.keymap.set("n", "<leader>h3", function() ui.nav_file(3) end, { desc = "Harpoon: File 3" })
-    vim.keymap.set("n", "<leader>h4", function() ui.nav_file(4) end, { desc = "Harpoon: File 4" })
-    end,
-  },
+      vim.keymap.set("n", "<leader>ha", mark.add_file, { desc = "Harpoon: Add File" })
+      vim.keymap.set("n", "<leader>hm", ui.toggle_quick_menu, { desc = "Harpoon: Menu" })
+      vim.keymap.set("n", "<leader>h1", function() ui.nav_file(1) end, { desc = "Harpoon: File 1" })
+      vim.keymap.set("n", "<leader>h2", function() ui.nav_file(2) end, { desc = "Harpoon: File 2" })
+      vim.keymap.set("n", "<leader>h3", function() ui.nav_file(3) end, { desc = "Harpoon: File 3" })
+      vim.keymap.set("n", "<leader>h4", function() ui.nav_file(4) end, { desc = "Harpoon: File 4" })
+      end,
+    },
+
   })
