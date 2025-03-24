@@ -1,0 +1,13 @@
+# Backup & Swap files
+*.swp
+*.swo
+*.swn
+*~
+**/markdown-preview.nvim/app/node_modules/
+
+# Lua LSP local workspace data
+.lua_ls
+
+# Lazy.nvim state
+lazy-lock.json
+plugin/packer_compiled.lua

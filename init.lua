@@ -2,7 +2,7 @@
 vim.g.mapleader = " "
 
 -- ====================================================
--- 🧠 Keybindings
+-- 🧠 Keybindings (global, sofort verfügbar)
 -- ====================================================
 vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files" })
@@ -11,17 +11,6 @@ vim.keymap.set("n", "<leader>fb", ":Telescope buffers<CR>", { desc = "Find buffe
 vim.keymap.set("n", "<leader>fh", ":Telescope help_tags<CR>", { desc = "Find help" })
 vim.keymap.set("n", "<leader>mp", ":MarkdownPreview<CR>", { desc = "Markdown Preview" })
 vim.keymap.set("n", "<leader>ms", ":MarkdownPreviewStop<CR>", { desc = "Stop Preview" })
-
--- 🔖 Harpoon Keymaps
-local mark = require("harpoon.mark")
-local ui = require("harpoon.ui")
-
-vim.keymap.set("n", "<leader>ha", mark.add_file, { desc = "Harpoon: Add File" })
-vim.keymap.set("n", "<leader>hm", ui.toggle_quick_menu, { desc = "Harpoon: Menu" })
-vim.keymap.set("n", "<leader>h1", function() ui.nav_file(1) end, { desc = "Harpoon: File 1" })
-vim.keymap.set("n", "<leader>h2", function() ui.nav_file(2) end, { desc = "Harpoon: File 2" })
-vim.keymap.set("n", "<leader>h3", function() ui.nav_file(3) end, { desc = "Harpoon: File 3" })
-vim.keymap.set("n", "<leader>h4", function() ui.nav_file(4) end, { desc = "Harpoon: File 4" })
 
 -- ====================================================
 -- 🚀 Lazy.nvim Bootstrap
@@ -44,9 +33,7 @@ if not vim.loop.fs_stat(lazypath) then
   -- ====================================================
   require("lazy").setup({
 
-    -- ====================================================
     -- 🎨 UI & Theme
-    -- ====================================================
     {
       "Mofiqul/dracula.nvim",
       lazy = false,
@@ -66,9 +53,7 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- ====================================================
     -- 🧭 Navigation & File Management
-    -- ====================================================
     {
       "nvim-tree/nvim-tree.lua",
       dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -97,9 +82,7 @@ if not vim.loop.fs_stat(lazypath) then
       },
     },
 
-    -- ====================================================
     -- 🧠 LSP, Completion & Snippets
-    -- ====================================================
     {
       "VonHeikemen/lsp-zero.nvim",
       branch = "v3.x",
@@ -140,9 +123,7 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- ====================================================
     -- 💾 Formatting
-    -- ====================================================
     {
       "stevearc/conform.nvim",
       config = function()
@@ -161,9 +142,7 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- ====================================================
     -- ✨ Enhancements
-    -- ====================================================
     {
       "nvim-treesitter/nvim-treesitter",
       build = ":TSUpdate",
@@ -196,9 +175,7 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- ====================================================
     -- 🐙 Git & Markdown
-    -- ====================================================
     {
       "kdheepak/lazygit.nvim",
       dependencies = { "nvim-lua/plenary.nvim" },
@@ -220,15 +197,20 @@ if not vim.loop.fs_stat(lazypath) then
       end,
     },
 
-    -- ====================================================
-    -- 🔖 Harpoon
-    -- ====================================================
-    {
-      "ThePrimeagen/harpoon",
-      dependencies = { "nvim-lua/plenary.nvim" },
-      config = function()
-      require("harpoon").setup()
-      end,
-    },
+    -- 🔖 Harpoon (inkl. Keymaps hier!)
+  {
+    "ThePrimeagen/harpoon",
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+    local mark = require("harpoon.mark")
+    local ui = require("harpoon.ui")
 
+    vim.keymap.set("n", "<leader>ha", mark.add_file, { desc = "Harpoon: Add File" })
+    vim.keymap.set("n", "<leader>hm", ui.toggle_quick_menu, { desc = "Harpoon: Menu" })
+    vim.keymap.set("n", "<leader>h1", function() ui.nav_file(1) end, { desc = "Harpoon: File 1" })
+    vim.keymap.set("n", "<leader>h2", function() ui.nav_file(2) end, { desc = "Harpoon: File 2" })
+    vim.keymap.set("n", "<leader>h3", function() ui.nav_file(3) end, { desc = "Harpoon: File 3" })
+    vim.keymap.set("n", "<leader>h4", function() ui.nav_file(4) end, { desc = "Harpoon: File 4" })
+    end,
+  },
   })
